@@ -1,0 +1,73 @@
+CREATE DATABASE ClinicaSantoTomas;
+GO
+
+USE ClinicaSantoTomas;
+GO
+
+-- Tabla Usuarios
+CREATE TABLE Usuarios (
+    id_usuario INT PRIMARY KEY IDENTITY(1,1), 
+    nombre_usuario VARCHAR(100) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL 
+);
+GO
+
+-- Tabla Pacientes
+CREATE TABLE Pacientes (
+    id_paciente INT PRIMARY KEY IDENTITY(1,1), -- Cambiado AUTO_INCREMENT por IDENTITY
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    direccion VARCHAR(255),
+    distrito VARCHAR(100),
+    provincia VARCHAR(100),
+    departamento VARCHAR(100),
+    codigo_postal VARCHAR(20),
+    telefono VARCHAR(20),
+    fecha_nacimiento DATE
+);
+GO
+
+-- Tabla Médicos
+CREATE TABLE Medicos (
+    id_medico INT PRIMARY KEY IDENTITY(1,1), -- Cambiado AUTO_INCREMENT por IDENTITY
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    telefono VARCHAR(20),
+    especialidad VARCHAR(100)
+);
+GO
+
+-- Tabla Internamientos
+CREATE TABLE Internamientos (
+    id_internamiento INT PRIMARY KEY IDENTITY(1,1), -- Cambiado AUTO_INCREMENT por IDENTITY
+    id_paciente INT NOT NULL,
+    numero_habitacion INT NOT NULL,
+    cama_asignada VARCHAR(20) NOT NULL,
+    fecha_ingreso DATETIME NOT NULL,
+    FOREIGN KEY (id_paciente) REFERENCES Pacientes(id_paciente)
+);
+GO
+
+-- Tabla Altas
+CREATE TABLE Altas (
+    id_alta INT PRIMARY KEY IDENTITY(1,1), -- Cambiado AUTO_INCREMENT por IDENTITY
+    id_internamiento INT NOT NULL,
+    fecha_alta DATE NOT NULL,
+    hora_alta TIME NOT NULL,
+    id_medico_autorizador INT NOT NULL,
+    FOREIGN KEY (id_internamiento) REFERENCES Internamientos(id_internamiento),
+    FOREIGN KEY (id_medico_autorizador) REFERENCES Medicos(id_medico)
+);
+GO
+
+-- Tabla Visitas Médicas
+CREATE TABLE Visitas_Medicas (
+    id_visita INT PRIMARY KEY IDENTITY(1,1), -- Cambiado AUTO_INCREMENT por IDENTITY
+    id_internamiento INT NOT NULL,
+    id_medico INT NOT NULL,
+    fecha_visita DATE NOT NULL,
+    hora_visita TIME NOT NULL,
+    FOREIGN KEY (id_internamiento) REFERENCES Internamientos(id_internamiento),
+    FOREIGN KEY (id_medico) REFERENCES Medicos(id_medico)
+);
+GO
