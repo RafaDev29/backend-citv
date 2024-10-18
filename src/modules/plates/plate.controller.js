@@ -1,5 +1,5 @@
 // src/modules/visits/visits.controller.js
-const platesService = require('./visits.service');
+const platesService = require('./plate.service');
 
 
 

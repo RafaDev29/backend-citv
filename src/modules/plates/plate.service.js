@@ -8,15 +8,16 @@ const listPlates = async () => {
         const pool = await poolPromise;
         const result = await pool.request()
             .query(`
-        SELECT IdIngCou, NumVez, PlaVeh 
-        FROM INGCOU
-         WHERE IdEst = '01'
-        Order By 1 DESC
+       SELECT IdIngCou, NumVez, PlaVeh 
+FROM INGCOU
+WHERE IdEst = '01'
+Order By 1 DESC
+        
       `);
 
-      
 
-        return result;
+
+        return result.recordset;
 
     } catch (error) {
         throw new Error('Error al listar las placas: ' + error.message);

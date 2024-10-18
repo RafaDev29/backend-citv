@@ -3,12 +3,10 @@ const express = require('express');
 const cors= require('cors')
 const app = express();
 const userRoutes = require('./src/modules/user/user.routes');
-const doctorRoutes = require('./src/modules/doctor/doctor.routes');
+const platesRoutes = require('./src/modules/plates/plate.routes');
 const responseMiddleware = require('./src/middleware/responseMiddleware');
-const patientRoutes = require('./src/modules/patient/patient.routes')
-const internmentsRoutes = require('./src/modules/internment/internments.routes');
-const dischargesRoutes = require('./src/modules/discharges/discharges.routes')
-const visitsRoutes = require('./src/modules/visits/visits.routes')
+const evidenceRoutes = require('./src/modules/evidence/evidense.routes')
+
 // Middleware para procesar JSON y para manejar respuestas
 app.use(express.json());
 app.use(responseMiddleware);
@@ -16,14 +14,12 @@ app.use(cors());
 
 // Rutas
 app.use('/api/users', userRoutes);
-app.use('/api/doctor', doctorRoutes);
-app.use('/api/patient', patientRoutes);
-app.use('/api/internment', internmentsRoutes);
-app.use('/api/discharges', dischargesRoutes)
-app.use('/api/visits', visitsRoutes)
+app.use('/api/plates', platesRoutes);
+app.use('/api/evidence', evidenceRoutes)
+
 
 // Puerto de escucha
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3080;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
