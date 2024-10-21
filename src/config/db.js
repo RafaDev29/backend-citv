@@ -3,8 +3,8 @@ const sql = require('mssql');
 const dbConfig = {
   user: 'sa',
   password: '0313334',
-  server: 'jupiter!sd4a',
-  database: 'SistCITVRD|lelesda',
+  server: 'jupiter',
+  database: 'SistCITVRD',
   port: 1433,
   options: {
     encrypt: false, 

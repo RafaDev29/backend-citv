@@ -8,7 +8,7 @@ const responseMiddleware = require('./src/middleware/responseMiddleware');
 const evidenceRoutes = require('./src/modules/evidence/evidense.routes')
 
 // Middleware para procesar JSON y para manejar respuestas
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(responseMiddleware);
 app.use(cors());
 
