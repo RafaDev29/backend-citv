@@ -8,7 +8,7 @@ const createEvidence = async (req, res) => {
       return res.status(400).json({ message: 'No se ha proporcionado ningún archivo' });
     }
 
-    // Iterar sobre cada archivo para obtener su tamaño y convertir la imagen a Base64
+    // Iterar sobre cada archivo para obtener su tamaño
     const promises = req.files.map(async (file) => {
       const imageSize = file.size; // El tamaño de la imagen en bytes
       console.log(`Tamaño de la imagen: ${imageSize} bytes`);
@@ -31,22 +31,21 @@ const createEvidence = async (req, res) => {
       };
 
       // Llamar al servicio para insertar en la base de datos
+      // return await evidenceService.createEvidence(evidenceData);
       await evidenceService.createEvidence(evidenceData);
 
       // Devolver la evidencia con la imagen en Base64
       return { ...evidenceData, Foto64: imageBase64 };
     });
 
-    // Ejecutar todas las inserciones de forma paralela y obtener las respuestas
+    // Ejecutar todas las inserciones de forma paralela
     const results = await Promise.all(promises);
 
-    // Enviar la respuesta con los datos, incluyendo las imágenes en Base64
     res.status(201).json({ message: 'Evidencia creada exitosamente', data: results });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 
 
