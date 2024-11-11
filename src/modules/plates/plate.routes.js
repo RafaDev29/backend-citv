@@ -1,9 +1,8 @@
-// src/modules/visits/visits.routes.js
 const express = require('express');
 const router = express.Router();
-const platesController = require('./plate.controller');
+const platesController = require('./plates.controller');
 
-
-router.get('/list', platesController.listPlates);
-
+// Ruta POST para crear un nuevo registro en plates
+router.post('/', platesController.createPlate);
+router.get('/', platesController.listActivePlates);
 module.exports = router;

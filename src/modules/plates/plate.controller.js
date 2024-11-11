@@ -1,27 +1,36 @@
-// src/modules/visits/visits.controller.js
-const platesService = require('./plate.service');
+const platesService = require('./plates.service');
 
-
-
-
-const listPlates = async (req, res) => {
-  try {
-    const plates = await platesService.listPlates();
-    res.status(200).json({
-      message: "Placas listadas correctamente",
-      status: true,
-      data: plates
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error al listar las placas",
-      status: false,
-      data: error.message
-    });
-  }
+exports.createPlate = async (req, res) => {
+    try {
+        const data = await platesService.createPlate(req.body);
+        res.json({
+            message: "Plate record created successfully",
+            status: true,
+            data: data
+        });
+    } catch (error) {
+        res.json({
+            message: error.message,
+            status: false,
+            data: null
+        });
+    }
 };
 
-module.exports = {
 
-    listPlates
+exports.listActivePlates = async (req, res) => {
+  try {
+      const data = await platesService.listActivePlates();
+      res.json({
+          message: "Plates with status 0 retrieved successfully",
+          status: true,
+          data: data
+      });
+  } catch (error) {
+      res.json({
+          message: error.message,
+          status: false,
+          data: null
+      });
+  }
 };
