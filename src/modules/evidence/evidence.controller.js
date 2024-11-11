@@ -16,3 +16,22 @@ exports.createEvidence = async (req, res) => {
         });
     }
 };
+
+
+
+exports.listEvidenceGrouped = async (req, res) => {
+  try {
+      const data = await evidenceService.listEvidenceGrouped();
+      res.json({
+          message: "Evidence records grouped by IdIngCou retrieved successfully",
+          status: true,
+          data: data
+      });
+  } catch (error) {
+      res.json({
+          message: error.message,
+          status: false,
+          data: null
+      });
+  }
+};
