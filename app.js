@@ -6,6 +6,7 @@ const app = express();
 
 const responseMiddleware = require('./src/middleware/responseMiddleware');
 const evidenceRoutes = require('./src/modules/evidence/evidense.routes')
+const platesRoutes = require('./src/modules/plates/plate.routes')
 
 // Middleware para procesar JSON y para manejar respuestas
 app.use(express.json({ limit: '50mb' }));
@@ -16,6 +17,7 @@ app.use(cors());
 
 
 app.use('/api/evidence', evidenceRoutes)
+app.use('/api/plates', platesRoutes)
 
 
 // Puerto de escucha

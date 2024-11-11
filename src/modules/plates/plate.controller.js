@@ -1,4 +1,4 @@
-const platesService = require('./plates.service');
+const platesService = require('./plate.service');
 
 exports.createPlate = async (req, res) => {
     try {

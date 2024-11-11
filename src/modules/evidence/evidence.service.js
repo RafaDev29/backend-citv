@@ -3,64 +3,61 @@ const FormData = require('form-data');
 const db = require('../../config/db');
 
 exports.createEvidence = async (body, files) => {
-    const { IdIngCou, Item, Detalle, LogUsu } = body;
-    const status = 0;
+  const { IdIngCou, Item, Detalle, LogUsu } = body;
+  const status = 0;
 
-    // Configura el form-data para enviar los archivos al servicio externo
-    const formData = new FormData();
-    files.forEach(file => {
-        formData.append('file', file.buffer, file.originalname); // `buffer` contiene el archivo cargado en memoria
-    });
+  const evidenceEntries = [];
 
-    try {
-        // Enviar archivos al servicio externo y obtener los enlaces
-        const response = await axios.post('http://198.211.99.223:9000/file/upload', formData, {
-            headers: {
-                ...formData.getHeaders()
-            }
-        });
+  try {
+      // Enviar cada archivo en una solicitud individual
+      for (let index = 0; index < files.length; index++) {
+          const file = files[index];
+          const formData = new FormData();
+          formData.append('file', file.buffer, file.originalname);
 
-        
-        if (response.data.message !== "ok" || !Array.isArray(response.data.files)) {
-            throw new Error("Error uploading files to external service");
-        }
+          // Solicitud al servicio externo para subir el archivo
+          const response = await axios.post('http://198.211.99.223:9000/file/upload', formData, {
+              headers: {
+                  ...formData.getHeaders()
+              }
+          });
 
-        // Obtener los enlaces de las imágenes
-        const links = response.data.files;
+          // Verificar la respuesta
+          if (response.data.message !== "File saved successfully" || !response.data.data) {
+              throw new Error("Error uploading files to external service");
+          }
 
-        // Crear las entradas de evidencia en la base de datos
-        const evidenceEntries = links.map((link, index) => ({
-            IdIngCou,
-            NumVez: index + 1, // Número de la foto
-            Item,
-            Foto: link, // Guarda el enlace de la imagen en la nube
-            Detalle,
-            LogUsu: LogUsu || 'admin',
-            FecSis: new Date().toISOString().slice(0, 19).replace('T', ' '),
-            ChkCert: index === 0 ? 1 : 0, // Solo la primera imagen tiene ChkCert = 1
-            status
-        }));
+          // Crear el registro de evidencia con el enlace obtenido
+          const link = response.data.data;
+          const evidenceEntry = {
+              IdIngCou,
+              NumVez: index + 1,
+              Item: Item || '-',
+              Foto: link, // Enlace devuelto por el servicio externo
+              Detalle,
+              LogUsu: LogUsu || 'admin',
+              FecSis: new Date().toISOString().slice(0, 19).replace('T', ' '),
+              ChkCert: index === 0 ? 1 : 0, // Solo la primera imagen tiene ChkCert = 1
+              status
+          };
+          evidenceEntries.push(evidenceEntry);
 
-        const insertedRecords = [];
-        for (const entry of evidenceEntries) {
-            const [result] = await db.query(
-                'INSERT INTO evidencia SET ?',
-                entry
-            );
-            insertedRecords.push(result.insertId);
-        }
-        return insertedRecords;
+          // Guardar el registro en la base de datos
+          const [result] = await db.query('INSERT INTO evidencia SET ?', evidenceEntry);
+          evidenceEntry.id = result.insertId; // Añadir el id del registro insertado para referencia
+      }
 
-    } catch (error) {
-        throw new Error("Error saving evidence records: " + error.message);
-    }
+      return evidenceEntries;
+
+  } catch (error) {
+      throw new Error("Error saving evidence records: " + error.message);
+  }
 };
-
 
 
 exports.listEvidenceGrouped = async () => {
   try {
-      const query = `
+    const query = `
           SELECT IdIngCou, 
                  GROUP_CONCAT(JSON_OBJECT(
                      'id', id,
@@ -77,17 +74,17 @@ exports.listEvidenceGrouped = async () => {
           GROUP BY IdIngCou;
       `;
 
-      const [rows] = await db.query(query);
+    const [rows] = await db.query(query);
 
-      // Formatear el resultado para que cada IdIngCou tenga su lista de evidencias como un array de objetos
-      const groupedEvidence = rows.map(row => ({
-          IdIngCou: row.IdIngCou,
-          evidences: JSON.parse(`[${row.evidences}]`)
-      }));
+    // Formatear el resultado para que cada IdIngCou tenga su lista de evidencias como un array de objetos
+    const groupedEvidence = rows.map(row => ({
+      IdIngCou: row.IdIngCou,
+      evidences: JSON.parse(`[${row.evidences}]`)
+    }));
 
-      return groupedEvidence;
+    return groupedEvidence;
 
   } catch (error) {
-      throw new Error("Error retrieving grouped evidence records: " + error.message);
+    throw new Error("Error retrieving grouped evidence records: " + error.message);
   }
 };
